@@ -3,15 +3,41 @@
   "title": "Arcade Engine configuration schema",
   "description": "A JSON Schema covering all possible configuration options in the YAML config file.",
   "$defs": {
+    "envVarPattern": {
+      "type": "string",
+      "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$"
+    },
+    "filePattern": {
+      "type": "string",
+      "pattern": "^\\$\\{file:[A-Z0-9_\\/]+\\}$"
+    },
     "redisConfig": {
       "type": "object",
       "description": "Configures Redis.",
       "properties": {
         "addr": { "type": "string" },
         "password": { "type": "string" },
-        "db": { "type": "integer" },
-        "read_timeout": { "type": "integer" },
-        "write_timeout": { "type": "integer" }
+        "db": {
+          "oneOf": [
+            { "type": "integer" },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "read_timeout": {
+          "oneOf": [
+            { "type": "integer" },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "write_timeout": {
+          "oneOf": [
+            { "type": "integer" },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        }
       },
       "required": ["addr", "db"],
       "additionalProperties": true
@@ -67,20 +93,28 @@
         "development": {
           "oneOf": [
             { "type": "boolean", "default": false },
-            { "type": "string", "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$" }
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
           ]
         },
         "host": { "type": "string" },
         "port": {
           "oneOf": [
             { "type": "integer", "default": 9099 },
-            { "type": "string", "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$" }
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
           ]
         },
         "read_timeout": { "type": "string", "default": "30s" },
         "write_timeout": { "type": "string", "default": "1m" },
         "idle_timeout": { "type": "string", "default": "30s" },
-        "max_request_body_size": { "type": "integer", "default": 4194304 },
+        "max_request_body_size": {
+          "oneOf": [
+            { "type": "integer", "default": 4194304 },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
         "rate_limit": {
           "oneOf": [
             {
@@ -135,7 +169,8 @@
             "enabled": {
               "oneOf": [
                 { "type": "boolean", "default": false },
-                { "type": "string", "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$" }
+                { "$ref": "#/$defs/envVarPattern" },
+                { "$ref": "#/$defs/filePattern" }
               ]
             }
           },
@@ -163,9 +198,12 @@
                     "description": "A description of the auth provider."
                   },
                   "enabled": {
-                    "type": "boolean",
                     "description": "Whether the auth provider is enabled.",
-                    "default": true
+                    "oneOf": [
+                      { "type": "boolean", "default": true },
+                      { "$ref": "#/$defs/envVarPattern" },
+                      { "$ref": "#/$defs/filePattern" }
+                    ]
                   },
                   "type": {
                     "type": "string",
@@ -263,9 +301,12 @@
                     "description": "A description of the auth provider."
                   },
                   "enabled": {
-                    "type": "boolean",
                     "description": "Whether the auth provider is enabled.",
-                    "default": true
+                    "oneOf": [
+                      { "type": "boolean", "default": true },
+                      { "$ref": "#/$defs/envVarPattern" },
+                      { "$ref": "#/$defs/filePattern" }
+                    ]
                   },
                   "type": {
                     "type": "string",
@@ -381,9 +422,12 @@
                 "description": "The unique ID of the model."
               },
               "enabled": {
-                "type": "boolean",
                 "description": "Whether the model is enabled.",
-                "default": true
+                "oneOf": [
+                  { "type": "boolean", "default": true },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
               },
               "openai": {
                 "type": "object",
@@ -464,9 +508,12 @@
                 "description": "The unique ID of the key."
               },
               "default": {
-                "type": "boolean",
                 "description": "Whether the key is the default key.",
-                "default": false
+                "oneOf": [
+                  { "type": "boolean", "default": false },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
               },
               "value": {
                 "type": "string",
@@ -524,17 +571,29 @@
                 "user": { "type": "string" },
                 "password": { "type": "string" },
                 "host": { "type": "string" },
-                "port": { "type": "integer" },
+                "port": {
+                  "oneOf": [
+                    { "type": "integer" },
+                    { "$ref": "#/$defs/envVarPattern" },
+                    { "$ref": "#/$defs/filePattern" }
+                  ]
+                },
                 "db": { "type": "string" },
                 "sslmode": {
-                  "type": "string",
-                  "enum": [
-                    "disable",
-                    "allow",
-                    "prefer",
-                    "require",
-                    "verify-ca",
-                    "verify-full"
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "disable",
+                        "allow",
+                        "prefer",
+                        "require",
+                        "verify-ca",
+                        "verify-full"
+                      ]
+                    },
+                    { "$ref": "#/$defs/envVarPattern" },
+                    { "$ref": "#/$defs/filePattern" }
                   ]
                 }
               },
@@ -593,9 +652,12 @@
                 "description": "The unique ID of the director."
               },
               "enabled": {
-                "type": "boolean",
                 "description": "Whether the director is enabled.",
-                "default": true
+                "oneOf": [
+                  { "type": "boolean", "default": true },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
               },
               "workers": {
                 "type": "array",
@@ -607,8 +669,12 @@
                       "description": "The unique ID of the worker."
                     },
                     "enabled": {
-                      "type": "boolean",
-                      "description": "Whether the worker is enabled."
+                      "description": "Whether the worker is enabled.",
+                      "oneOf": [
+                        { "type": "boolean", "default": true },
+                        { "$ref": "#/$defs/envVarPattern" },
+                        { "$ref": "#/$defs/filePattern" }
+                      ]
                     },
                     "http": {
                       "type": "object",
