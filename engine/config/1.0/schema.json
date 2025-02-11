@@ -1,0 +1,728 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Arcade Engine configuration schema",
+  "description": "A JSON Schema covering all possible configuration options in the YAML config file.",
+  "$defs": {
+    "envVarPattern": {
+      "type": "string",
+      "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$"
+    },
+    "filePattern": {
+      "type": "string",
+      "pattern": "^\\$\\{file:[A-Z0-9_\\/]+\\}$"
+    },
+    "redisConfig": {
+      "type": "object",
+      "description": "Configures Redis.",
+      "properties": {
+        "addr": { "type": "string" },
+        "password": { "type": "string" },
+        "db": {
+          "oneOf": [
+            { "type": "integer" },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "read_timeout": {
+          "oneOf": [
+            { "type": "integer" },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "write_timeout": {
+          "oneOf": [
+            { "type": "integer" },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        }
+      },
+      "required": ["addr", "db"],
+      "additionalProperties": true
+    },
+    "oauthRequestConfig": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "The endpoint for the OAuth request."
+        },
+        "method": {
+          "type": "string",
+          "description": "The HTTP method to use for the OAuth request.",
+          "enum": ["GET", "POST"]
+        },
+        "auth_method": {
+          "type": "string",
+          "description": "The authentication method to use for the OAuth request.",
+          "enum": ["", "client_secret_basic", "bearer_access_token"]
+        },
+        "parameters": {
+          "type": "object",
+          "description": "The parameters to include in the OAuth request, as a map of key-value pairs."
+        },
+        "request_content_type": {
+          "type": "string",
+          "description": "The content type of the request body.",
+          "enum": ["application/x-www-form-urlencoded", "application/json"],
+          "default": "application/x-www-form-urlencoded"
+        },
+        "response_content_type": {
+          "type": "string",
+          "description": "The expected content type of the response body.",
+          "enum": ["application/x-www-form-urlencoded", "application/json"],
+          "default": "application/json"
+        },
+        "response_map": {
+          "type": "object",
+          "description": "An optional map of keys to extract from the response body. See: https://docs.arcade.dev/home/auth-providers/oauth2#jsonpath-expressions-in-response_map"
+        }
+      },
+      "required": ["endpoint", "parameters"],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "api": {
+      "type": "object",
+      "description": "Configures the API server.",
+      "properties": {
+        "development": {
+          "oneOf": [
+            { "type": "boolean", "default": false },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "host": { "type": "string" },
+        "port": {
+          "oneOf": [
+            { "type": "integer", "default": 9099 },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "read_timeout": { "type": "string", "default": "30s" },
+        "write_timeout": { "type": "string", "default": "1m" },
+        "idle_timeout": { "type": "string", "default": "30s" },
+        "max_request_body_size": {
+          "oneOf": [
+            { "type": "integer", "default": 4194304 },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "rate_limit": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "redis": {
+                  "allOf": [
+                    { "$ref": "#/$defs/redisConfig" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "limit": {
+                          "type": "integer",
+                          "default": 100,
+                          "description": "The maximum number of requests allowed per account per time unit."
+                        },
+                        "time_unit": {
+                          "type": "string",
+                          "enum": ["s", "m", "h", "d"],
+                          "default": "m",
+                          "description": "The time unit for the rate limit."
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": ["redis"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "noop": {
+                  "type": "object",
+                  "description": "No-op rate limiter configuration. This is the default if no other rate limiter is specified.",
+                  "additionalProperties": false
+                }
+              },
+              "required": ["noop"],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "additionalProperties": false
+        },
+        "analytics": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "oneOf": [
+                { "type": "boolean", "default": false },
+                { "$ref": "#/$defs/envVarPattern" },
+                { "$ref": "#/$defs/filePattern" }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The unique ID of the auth provider."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the auth provider."
+                  },
+                  "enabled": {
+                    "description": "Whether the auth provider is enabled.",
+                    "oneOf": [
+                      { "type": "boolean", "default": true },
+                      { "$ref": "#/$defs/envVarPattern" },
+                      { "$ref": "#/$defs/filePattern" }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["oauth2"],
+                    "description": "The type of the auth provider."
+                  },
+                  "provider_id": {
+                    "type": "string",
+                    "description": "The known provider type ID of the auth provider, e.g. 'google'."
+                  },
+                  "client_id": {
+                    "type": "string",
+                    "description": "The OAuth client ID of the auth provider."
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "description": "The OAuth client secret of the auth provider."
+                  },
+                  "oauth2": {
+                    "type": "object",
+                    "properties": {
+                      "scope_delimiter": {
+                        "type": "string",
+                        "description": "The delimiter to use between scope values in the OAuth scope parameter.",
+                        "default": " "
+                      },
+                      "pkce": {
+                        "type": "object",
+                        "description": "Configures PKCE for the OAuth provider, if applicable. Leave blank to disable.",
+                        "properties": {
+                          "enabled": { "type": "boolean" },
+                          "code_challenge_method": {
+                            "type": "string",
+                            "description": "The method to use for generating the PKCE code challenge.",
+                            "enum": ["S256"]
+                          }
+                        },
+                        "required": ["enabled"],
+                        "additionalProperties": false
+                      },
+                      "authorize_request": {
+                        "$ref": "#/$defs/oauthRequestConfig"
+                      },
+                      "token_request": { "$ref": "#/$defs/oauthRequestConfig" },
+                      "refresh_request": {
+                        "$ref": "#/$defs/oauthRequestConfig"
+                      },
+                      "user_info_request": {
+                        "allOf": [
+                          { "$ref": "#/$defs/oauthRequestConfig" },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "triggers": {
+                                "type": "object",
+                                "description": "Configures the triggers for the user info request.",
+                                "properties": {
+                                  "on_token_grant": {
+                                    "type": "boolean",
+                                    "description": "Whether to make the user info request when a new token is granted."
+                                  },
+                                  "on_token_refresh": {
+                                    "type": "boolean",
+                                    "description": "Whether to make the user info request when an existing token is refreshed."
+                                  }
+                                },
+                                "required": [
+                                  "on_token_grant",
+                                  "on_token_refresh"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["authorize_request", "token_request"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["id", "type", "client_id"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The unique ID of the auth provider."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the auth provider."
+                  },
+                  "enabled": {
+                    "description": "Whether the auth provider is enabled.",
+                    "oneOf": [
+                      { "type": "boolean", "default": true },
+                      { "$ref": "#/$defs/envVarPattern" },
+                      { "$ref": "#/$defs/filePattern" }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["oauth2"],
+                    "description": "The type of the auth provider."
+                  },
+                  "client_id": {
+                    "type": "string",
+                    "description": "The OAuth client ID of the auth provider."
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "description": "The OAuth client secret of the auth provider."
+                  },
+                  "oauth2": {
+                    "type": "object",
+                    "properties": {
+                      "scope_delimiter": {
+                        "type": "string",
+                        "description": "The delimiter to use between scope values in the OAuth scope parameter.",
+                        "default": " "
+                      },
+                      "pkce": {
+                        "type": "object",
+                        "description": "Configures PKCE for the OAuth provider, if applicable. Leave blank to disable.",
+                        "properties": {
+                          "enabled": { "type": "boolean" },
+                          "code_challenge_method": {
+                            "type": "string",
+                            "description": "The method to use for generating the PKCE code challenge.",
+                            "enum": ["S256"]
+                          }
+                        },
+                        "required": ["enabled"],
+                        "additionalProperties": false
+                      },
+                      "authorize_request": {
+                        "$ref": "#/$defs/oauthRequestConfig"
+                      },
+                      "token_request": { "$ref": "#/$defs/oauthRequestConfig" },
+                      "refresh_request": {
+                        "$ref": "#/$defs/oauthRequestConfig"
+                      },
+                      "user_info_request": {
+                        "type": "object",
+                        "properties": {
+                          "endpoint": { "type": "string" },
+                          "method": {
+                            "type": "string",
+                            "enum": ["GET", "POST"]
+                          },
+                          "auth_method": { "type": "string" },
+                          "parameters": { "type": "object" },
+                          "request_content_type": { "type": "string" },
+                          "response_content_type": { "type": "string" },
+                          "response_map": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                          },
+                          "triggers": {
+                            "type": "object",
+                            "properties": {
+                              "on_token_grant": { "type": "boolean" },
+                              "on_token_refresh": { "type": "boolean" }
+                            },
+                            "required": ["on_token_grant", "on_token_refresh"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["triggers"],
+                        "additionalProperties": true
+                      }
+                    },
+                    "required": ["authorize_request", "token_request"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["id", "type", "client_id", "oauth2"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "cache": {
+      "type": "object",
+      "description": "Configures the cache system.",
+      "properties": {
+        "api_key_ttl": { "type": "string", "default": "10s" },
+        "redis": { "$ref": "#/$defs/redisConfig" },
+        "in_memory": {
+          "type": "object",
+          "description": "Use an in-memory cache.",
+          "additionalProperties": false
+        }
+      },
+      "oneOf": [{ "required": ["in_memory"] }, { "required": ["redis"] }],
+      "additionalProperties": false
+    },
+    "llm": {
+      "type": "object",
+      "description": "Configures the language models that can handle requests.",
+      "properties": {
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique ID of the model."
+              },
+              "enabled": {
+                "description": "Whether the model is enabled.",
+                "oneOf": [
+                  { "type": "boolean", "default": true },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
+              },
+              "openai": {
+                "type": "object",
+                "description": "Configures an OpenAI-compatible model.",
+                "properties": {
+                  "api_key": {
+                    "type": "string",
+                    "description": "The API key for the model."
+                  },
+                  "base_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The base URL for the model.",
+                    "default": "https://api.openai.com/v1"
+                  },
+                  "chat_endpoint": {
+                    "type": "string",
+                    "description": "The chat endpoint for the model.",
+                    "default": "/chat/completions"
+                  }
+                },
+                "required": ["api_key"],
+                "additionalProperties": true
+              },
+              "anthropic": {
+                "type": "object",
+                "description": "Configures an Anthropic-compatible model.",
+                "properties": {
+                  "api_key": {
+                    "type": "string",
+                    "description": "The API key for the model."
+                  },
+                  "base_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The base URL for the model.",
+                    "default": "https://api.anthropic.com/v1"
+                  },
+                  "api_version": {
+                    "type": "string",
+                    "description": "The API version for the model.",
+                    "default": "2023-06-01"
+                  },
+                  "chat_endpoint": {
+                    "type": "string",
+                    "description": "The chat endpoint for the model.",
+                    "default": "/messages"
+                  }
+                },
+                "required": ["api_key"],
+                "additionalProperties": true
+              }
+            },
+            "required": ["id"],
+            "oneOf": [
+              { "required": ["openai"], "not": { "required": ["anthropic"] } },
+              { "required": ["anthropic"], "not": { "required": ["openai"] } }
+            ],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": ["models"],
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "description": "Configures the data security and encryption system.",
+      "properties": {
+        "root_keys": {
+          "type": "array",
+          "description": "Specifies the root encryption keys. At least one root key must be specified.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique ID of the key."
+              },
+              "default": {
+                "description": "Whether the key is the default key.",
+                "oneOf": [
+                  { "type": "boolean", "default": false },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
+              },
+              "value": {
+                "type": "string",
+                "description": "The string value of the key."
+              }
+            },
+            "required": ["id", "value"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["root_keys"],
+      "additionalProperties": false
+    },
+    "storage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Configures the persistent storage system.",
+          "properties": {
+            "in_memory": {
+              "type": "object",
+              "description": "Use an in-memory database (data is not persisted between restarts). If storage is not configured, this is the default.",
+              "additionalProperties": false
+            }
+          },
+          "required": ["in_memory"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "description": "Configures the persistent storage system.",
+          "properties": {
+            "sqlite": {
+              "type": "object",
+              "description": "Use a SQLite database for persistent storage.",
+              "properties": {
+                "connection_string": { "type": "string" }
+              },
+              "required": ["connection_string"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["sqlite"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "description": "Configures the persistent storage system.",
+          "properties": {
+            "postgres": {
+              "type": "object",
+              "description": "Use a PostgreSQL database for persistent storage.",
+              "properties": {
+                "user": { "type": "string" },
+                "password": { "type": "string" },
+                "host": { "type": "string" },
+                "port": {
+                  "oneOf": [
+                    { "type": "integer" },
+                    { "$ref": "#/$defs/envVarPattern" },
+                    { "$ref": "#/$defs/filePattern" }
+                  ]
+                },
+                "db": { "type": "string" },
+                "sslmode": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "disable",
+                        "allow",
+                        "prefer",
+                        "require",
+                        "verify-ca",
+                        "verify-full"
+                      ]
+                    },
+                    { "$ref": "#/$defs/envVarPattern" },
+                    { "$ref": "#/$defs/filePattern" }
+                  ]
+                }
+              },
+              "required": ["user", "password", "host", "port", "db", "sslmode"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["postgres"],
+          "additionalProperties": false
+        },
+        {
+          "type": "null",
+          "description": "No storage configuration is set. Uses an in-memory database (data is not persisted between restarts)."
+        }
+      ]
+    },
+    "telemetry": {
+      "type": "object",
+      "description": "Configures the OTEL telemetry system.",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "The environment the Arcade Engine is running in."
+        },
+        "logging": {
+          "type": "object",
+          "properties": {
+            "level": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": ["debug", "info", "warn", "error"]
+                },
+                { "type": "string", "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$" }
+              ]
+            },
+            "encoding": { "type": "string" }
+          },
+          "required": ["level", "encoding"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["environment", "logging"],
+      "additionalProperties": true
+    },
+    "tools": {
+      "type": "object",
+      "properties": {
+        "directors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique ID of the director."
+              },
+              "enabled": {
+                "description": "Whether the director is enabled.",
+                "oneOf": [
+                  { "type": "boolean", "default": true },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
+              },
+              "workers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique ID of the worker."
+                    },
+                    "enabled": {
+                      "description": "Whether the worker is enabled.",
+                      "oneOf": [
+                        { "type": "boolean", "default": true },
+                        { "$ref": "#/$defs/envVarPattern" },
+                        { "$ref": "#/$defs/filePattern" }
+                      ]
+                    },
+                    "http": {
+                      "type": "object",
+                      "description": "Configures an HTTP-based worker.",
+                      "properties": {
+                        "uri": {
+                          "oneOf": [
+                            { "type": "string", "format": "uri" },
+                            {
+                              "type": "string",
+                              "pattern": "^\\$\\{env:[A-Z0-9_]+\\}$"
+                            }
+                          ],
+                          "description": "The URI of the worker."
+                        },
+                        "timeout": {
+                          "type": "number",
+                          "description": "The HTTP timeout in seconds for the worker.",
+                          "default": 30
+                        },
+                        "retry": {
+                          "type": "number",
+                          "description": "The number of times to retry a tool call.",
+                          "default": 3
+                        },
+                        "secret": {
+                          "type": "string",
+                          "description": "The secret for the worker. If not set, defaults to 'dev' in development mode only."
+                        }
+                      },
+                      "required": ["uri"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["id", "enabled", "http"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["id", "workers"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["directors"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["api", "llm", "security", "storage", "telemetry", "tools"],
+  "additionalProperties": true
+}
