@@ -167,8 +167,7 @@
             {
               "type": "null"
             }
-          ],
-          "additionalProperties": false
+          ]
         },
         "analytics": {
           "type": "object",
