@@ -18,6 +18,8 @@
         "addr": { "type": "string" },
         "password": { "type": "string" },
         "db": {
+          "default": 0,
+          "description": "The database to use for the Redis connection.",
           "oneOf": [
             { "type": "integer" },
             { "$ref": "#/$defs/envVarPattern" },
@@ -25,6 +27,7 @@
           ]
         },
         "read_timeout": {
+          "description": "The read timeout for the Redis connection in seconds.",
           "oneOf": [
             { "type": "integer" },
             { "$ref": "#/$defs/envVarPattern" },
@@ -32,6 +35,7 @@
           ]
         },
         "write_timeout": {
+          "description": "The write timeout for the Redis connection in seconds.",
           "oneOf": [
             { "type": "integer" },
             { "$ref": "#/$defs/envVarPattern" },
@@ -39,7 +43,7 @@
           ]
         }
       },
-      "required": ["addr", "db"],
+      "required": ["addr"],
       "additionalProperties": true
     },
     "oauthRequestConfig": {
@@ -127,9 +131,12 @@
                       "type": "object",
                       "properties": {
                         "limit": {
-                          "type": "integer",
-                          "default": 100,
-                          "description": "The maximum number of requests allowed per account per time unit."
+                          "description": "The maximum number of requests allowed per account per time unit.",
+                          "oneOf": [
+                            { "type": "integer", "default": 100 },
+                            { "$ref": "#/$defs/envVarPattern" },
+                            { "$ref": "#/$defs/filePattern" }
+                          ]
                         },
                         "time_unit": {
                           "type": "string",
@@ -174,7 +181,7 @@
               ]
             }
           },
-          "additionalProperties": false
+          "additionalProperties": true
         }
       },
       "additionalProperties": false
