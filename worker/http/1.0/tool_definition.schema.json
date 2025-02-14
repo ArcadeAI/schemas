@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$defs": {
     "primitives": {
-      // All supported primitive data types
+      "description": "All supported primitive data types",
       "type": "string",
       "enum": ["string", "integer", "number", "boolean", "json"]
     },
     "value_schema": {
-      // Represents the schema of a value (e.g. function input parameter value)
       "type": "object",
+      "description": "The schema of a value (e.g. function input parameter value)",
       "properties": {
         "val_type": {
           "oneOf": [{ "$ref": "#/$defs/primitives" }, { "type": "string", "enum": ["array"] }]
@@ -19,7 +19,7 @@
         },
         "enum": {
           "oneOf": [
-            { "type": "null" }, // Can be unset
+            { "type": "null" },
             {
               "type": "array",
               "items": {
@@ -42,7 +42,6 @@
   "type": "object",
   "properties": {
     "$schema": {
-      // Explicitly allow JSON-Schema to be referenced (due to additionalProperties: false)
       "type": "string",
       "format": "uri"
     },
@@ -143,7 +142,7 @@
       "properties": {
         "secrets": {
           "oneOf": [
-            { "type": "null" }, // Can be unset,
+            { "type": "null" },
             {
               "type": "array",
               "items": {
@@ -161,7 +160,7 @@
         },
         "authorization": {
           "oneOf": [
-            { "type": "null" }, // Can be unset
+            { "type": "null" },
             {
               "type": "string",
               "enum": ["none", "token"]

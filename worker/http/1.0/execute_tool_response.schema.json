@@ -3,7 +3,6 @@
   "type": "object",
   "properties": {
     "$schema": {
-      // Explicitly allow JSON-Schema to be referenced (needed due to additionalProperties: false)
       "type": "string",
       "format": "uri"
     },
@@ -25,7 +24,6 @@
       "description": "Whether the tool execution was successful"
     },
     "output": {
-      // Can be null/omitted, in the case of a null-returning (void) function
       "type": "object",
       "oneOf": [
         {
@@ -33,7 +31,7 @@
             "value": {
               "description": "The value returned from the function",
               "oneOf": [
-                { "type": "object", "additionalProperties": true }, // aka JSON
+                { "type": "object", "additionalProperties": true },
                 { "type": "number" },
                 { "type": "string" },
                 { "type": "boolean" }

@@ -3,7 +3,6 @@
   "type": "object",
   "properties": {
     "$schema": {
-      // Explicitly allow JSON-Schema to be referenced (needed due to additionalProperties: false)
       "type": "string",
       "format": "uri"
     },
