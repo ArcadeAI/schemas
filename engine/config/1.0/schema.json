@@ -27,17 +27,19 @@
           ]
         },
         "read_timeout": {
-          "description": "The read timeout for the Redis connection in seconds.",
+          "description": "The read timeout for the Redis connection as a duration string (e.g. '10s').",
+          "default": "10s",
           "oneOf": [
-            { "type": "integer" },
+            { "type": "string" },
             { "$ref": "#/$defs/envVarPattern" },
             { "$ref": "#/$defs/filePattern" }
           ]
         },
         "write_timeout": {
-          "description": "The write timeout for the Redis connection in seconds.",
+          "description": "The write timeout for the Redis connection as a duration string (e.g. '10s').",
+          "default": "10s",
           "oneOf": [
-            { "type": "integer" },
+            { "type": "string" },
             { "$ref": "#/$defs/envVarPattern" },
             { "$ref": "#/$defs/filePattern" }
           ]
