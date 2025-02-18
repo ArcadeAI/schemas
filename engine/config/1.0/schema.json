@@ -196,7 +196,7 @@
             "oneOf": [
               {
                 "type": "object",
-                "$comment": "Add a well-known OAuth provider.",
+                "$comment": "Config for a well-known OAuth provider.",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -237,7 +237,7 @@
               },
               {
                 "type": "object",
-                "$comment": "Add a custom OAuth provider.",
+                "$comment": "Config for a custom OAuth provider.",
                 "properties": {
                   "id": {
                     "type": "string",
