@@ -326,7 +326,7 @@
                       }
                     },
                     "required": ["authorize_request", "token_request"],
-                    "additionalProperties": false
+                    "additionalProperties": true
                   }
                 },
                 "required": ["id", "type", "client_id", "oauth2"],
