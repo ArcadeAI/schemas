@@ -233,7 +233,7 @@
                   }
                 },
                 "required": ["id", "type", "provider_id", "client_id"],
-                "additionalProperties": false
+                "additionalProperties": true
               },
               {
                 "type": "object",
@@ -330,7 +330,7 @@
                   }
                 },
                 "required": ["id", "type", "client_id", "oauth2"],
-                "additionalProperties": false
+                "additionalProperties": true
               }
             ]
           }
