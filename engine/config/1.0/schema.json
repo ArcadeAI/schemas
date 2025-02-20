@@ -193,146 +193,109 @@
         "providers": {
           "type": "array",
           "items": {
-            "oneOf": [
-              {
-                "type": "object",
-                "$comment": "Config for a well-known OAuth provider.",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "The unique ID of the auth provider."
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "A description of the auth provider."
-                  },
-                  "enabled": {
-                    "description": "Whether the auth provider is enabled.",
-                    "oneOf": [
-                      { "type": "boolean", "default": true },
-                      { "$ref": "#/$defs/envVarPattern" },
-                      { "$ref": "#/$defs/filePattern" }
-                    ]
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": ["oauth2"],
-                    "description": "The type of the auth provider."
-                  },
-                  "provider_id": {
-                    "type": "string",
-                    "description": "The known provider type ID of the auth provider, e.g. 'google'."
-                  },
-                  "client_id": {
-                    "type": "string",
-                    "description": "The OAuth client ID of the auth provider."
-                  },
-                  "client_secret": {
-                    "type": "string",
-                    "description": "The OAuth client secret of the auth provider."
-                  }
-                },
-                "required": ["id", "type", "provider_id", "client_id"],
-                "additionalProperties": true
+            "type": "object",
+            "$comment": "Config for an OAuth provider.",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique ID of the auth provider."
               },
-              {
+              "description": {
+                "type": "string",
+                "description": "A description of the auth provider."
+              },
+              "enabled": {
+                "description": "Whether the auth provider is enabled.",
+                "oneOf": [
+                  { "type": "boolean", "default": true },
+                  { "$ref": "#/$defs/envVarPattern" },
+                  { "$ref": "#/$defs/filePattern" }
+                ]
+              },
+              "type": {
+                "type": "string",
+                "enum": ["oauth2"],
+                "description": "The type of the auth provider."
+              },
+              "provider_id": {
+                "type": "string",
+                "description": "The known provider type ID of the auth provider, e.g. 'google'."
+              },
+              "client_id": {
+                "type": "string",
+                "description": "The OAuth client ID of the auth provider."
+              },
+              "client_secret": {
+                "type": "string",
+                "description": "The OAuth client secret of the auth provider."
+              },
+              "oauth2": {
                 "type": "object",
-                "$comment": "Config for a custom OAuth provider.",
                 "properties": {
-                  "id": {
+                  "scope_delimiter": {
                     "type": "string",
-                    "description": "The unique ID of the auth provider."
+                    "description": "The delimiter to use between scope values in the OAuth scope parameter.",
+                    "default": " "
                   },
-                  "description": {
-                    "type": "string",
-                    "description": "A description of the auth provider."
-                  },
-                  "enabled": {
-                    "description": "Whether the auth provider is enabled.",
-                    "oneOf": [
-                      { "type": "boolean", "default": true },
-                      { "$ref": "#/$defs/envVarPattern" },
-                      { "$ref": "#/$defs/filePattern" }
-                    ]
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": ["oauth2"],
-                    "description": "The type of the auth provider."
-                  },
-                  "client_id": {
-                    "type": "string",
-                    "description": "The OAuth client ID of the auth provider."
-                  },
-                  "client_secret": {
-                    "type": "string",
-                    "description": "The OAuth client secret of the auth provider."
-                  },
-                  "oauth2": {
+                  "pkce": {
                     "type": "object",
+                    "description": "Configures PKCE for the OAuth provider, if applicable. Leave blank to disable.",
                     "properties": {
-                      "scope_delimiter": {
+                      "enabled": { "type": "boolean" },
+                      "code_challenge_method": {
                         "type": "string",
-                        "description": "The delimiter to use between scope values in the OAuth scope parameter.",
-                        "default": " "
-                      },
-                      "pkce": {
-                        "type": "object",
-                        "description": "Configures PKCE for the OAuth provider, if applicable. Leave blank to disable.",
-                        "properties": {
-                          "enabled": { "type": "boolean" },
-                          "code_challenge_method": {
-                            "type": "string",
-                            "description": "The method to use for generating the PKCE code challenge.",
-                            "enum": ["S256"]
-                          }
-                        },
-                        "required": ["enabled"],
-                        "additionalProperties": false
-                      },
-                      "authorize_request": {
-                        "$ref": "#/$defs/oauthRequestConfig"
-                      },
-                      "token_request": { "$ref": "#/$defs/oauthRequestConfig" },
-                      "refresh_request": {
-                        "$ref": "#/$defs/oauthRequestConfig"
-                      },
-                      "user_info_request": {
-                        "allOf": [
-                          {
-                            "$ref": "#/$defs/oauthRequestConfig"
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "triggers": {
-                                "type": "object",
-                                "properties": {
-                                  "on_token_grant": {
-                                    "type": "boolean"
-                                  },
-                                  "on_token_refresh": {
-                                    "type": "boolean"
-                                  }
-                                },
-                                "minProperties": 1,
-                                "additionalProperties": false
-                              }
-                            },
-                            "required": ["triggers"]
-                          }
-                        ],
-                        "additionalProperties": true
+                        "description": "The method to use for generating the PKCE code challenge.",
+                        "enum": ["S256"]
                       }
                     },
-                    "required": ["authorize_request", "token_request"],
+                    "required": ["enabled"],
+                    "additionalProperties": false
+                  },
+                  "authorize_request": {
+                    "$ref": "#/$defs/oauthRequestConfig"
+                  },
+                  "token_request": { "$ref": "#/$defs/oauthRequestConfig" },
+                  "refresh_request": {
+                    "$ref": "#/$defs/oauthRequestConfig"
+                  },
+                  "user_info_request": {
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/oauthRequestConfig"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "triggers": {
+                            "type": "object",
+                            "properties": {
+                              "on_token_grant": {
+                                "type": "boolean"
+                              },
+                              "on_token_refresh": {
+                                "type": "boolean"
+                              }
+                            },
+                            "minProperties": 1,
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["triggers"]
+                      }
+                    ],
                     "additionalProperties": true
                   }
                 },
-                "required": ["id", "type", "client_id", "oauth2"],
+                "required": ["authorize_request", "token_request"],
                 "additionalProperties": true
               }
-            ]
+            },
+            "required": ["id", "type", "client_id"],
+            "oneOf": [
+              { "required": ["provider_id"] },
+              { "required": ["oauth2"] }
+            ],
+            "additionalProperties": true
           }
         }
       },
