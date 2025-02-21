@@ -286,15 +286,30 @@
                     "additionalProperties": true
                   }
                 },
-                "required": ["authorize_request", "token_request"],
                 "additionalProperties": true
               }
             },
             "required": ["id", "type", "client_id"],
-            "oneOf": [
+            "anyOf": [
               { "required": ["provider_id"] },
               { "required": ["oauth2"] }
             ],
+            "if": {
+              "properties": {
+                "provider_id": {
+                  "not": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "oauth2": {
+                  "required": ["authorize_request", "token_request"]
+                }
+              }
+            },
             "additionalProperties": true
           }
         }
