@@ -321,8 +321,8 @@
       "description": "Configures the cache system.",
       "properties": {
         "api_key_ttl": { "type": "string", "default": "10s" },
-        "worker_ttl": { "type": "string", "default": "60s" },
-        "tool_registry_ttl": { "type": "string", "default": "60s" },
+        "worker_ttl": { "type": "string", "default": "10s" },
+        "tool_registry_ttl": { "type": "string", "default": "10s" },
         "redis": { "$ref": "#/$defs/redisConfig" },
         "in_memory": {
           "type": "object",
