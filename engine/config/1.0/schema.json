@@ -584,6 +584,11 @@
                   { "$ref": "#/$defs/filePattern" }
                 ]
               },
+              "max_tools": {
+                "type": "number",
+                "description": "The maximum number of tools that can be used in a single request.",
+                "default": 64
+              },
               "workers": {
                 "type": "array",
                 "items": {
