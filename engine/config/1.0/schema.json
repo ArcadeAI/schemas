@@ -185,7 +185,7 @@
           "additionalProperties": true
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "auth": {
       "type": "object",
@@ -634,8 +634,8 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["id", "enabled", "http"],
-                  "additionalProperties": false
+                  "required": ["id", "enabled"],
+                  "additionalProperties": true
                 }
               }
             },
