@@ -589,6 +589,14 @@
                 "description": "The maximum number of tools that can be used in a single request.",
                 "default": 64
               },
+              "default_tools": {
+                "type": "array",
+                "description": "The default tools to use for the director.",
+                "items": {
+                  "type": "string",
+                  "description": "The name of the tool to use."
+                }
+              },
               "workers": {
                 "type": "array",
                 "items": {
