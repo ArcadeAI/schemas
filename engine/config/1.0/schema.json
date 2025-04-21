@@ -170,19 +170,6 @@
               "type": "null"
             }
           ]
-        },
-        "analytics": {
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "oneOf": [
-                { "type": "boolean", "default": false },
-                { "$ref": "#/$defs/envVarPattern" },
-                { "$ref": "#/$defs/filePattern" }
-              ]
-            }
-          },
-          "additionalProperties": true
         }
       },
       "additionalProperties": true
