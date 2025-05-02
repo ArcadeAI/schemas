@@ -451,7 +451,7 @@
         }
       },
       "required": ["root_keys"],
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "storage": {
       "oneOf": [
