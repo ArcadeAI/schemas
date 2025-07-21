@@ -172,16 +172,3 @@ tools:
             timeout: 30
             retry: 3
             secret: ${env:ARCADE_WORKER_SECRET}
-  toolkits:
-    - id: firecrawl
-      type: premium
-      aliases:
-        - arcade_firecrawl
-    - id: e2b
-      type: premium
-      aliases:
-        - arcade_e2b
-    - id: serpapi
-      type: premium
-      aliases:
-        - arcade_serpapi
