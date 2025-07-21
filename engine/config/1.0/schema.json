@@ -638,13 +638,11 @@
         "default_toolkit_type": {
           "type": "string",
           "enum": ["standard", "convenience", "premium"],
-          "description": "DEPRECATED: The default toolkit type to use for tool calls.",
-          "deprecated": true
+          "description": "DEPRECATED: The default toolkit type to use for tool calls."
         },
         "toolkits": {
           "type": "array",
           "description": "DEPRECATED: A list of toolkit configurations.",
-          "deprecated": true,
           "items": {
             "type": "object",
             "properties": {
