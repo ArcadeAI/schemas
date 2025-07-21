@@ -634,6 +634,41 @@
             "required": ["id", "workers"],
             "additionalProperties": true
           }
+        },
+        "default_toolkit_type": {
+          "type": "string",
+          "enum": ["standard", "convenience", "premium"],
+          "description": "DEPRECATED: The default toolkit type to use for tool calls.",
+          "deprecated": true
+        },
+        "toolkits": {
+          "type": "array",
+          "description": "DEPRECATED: A list of toolkit configurations.",
+          "deprecated": true,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique ID of the toolkit."
+              },
+              "type": {
+                "type": "string",
+                "enum": ["standard", "convenience", "premium"],
+                "description": "The type of the toolkit."
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Aliases for the toolkit."
+              }
+            },
+            "required": ["id", "type"],
+            "additionalProperties": false
+          },
+          "additionalProperties": false
         }
       },
       "required": ["directors"],
