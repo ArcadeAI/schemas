@@ -671,7 +671,7 @@
           "additionalProperties": false
         }
       },
-      "required": ["directors", "default_toolkit_type"],
+      "required": ["directors"],
       "additionalProperties": false
     }
   },
