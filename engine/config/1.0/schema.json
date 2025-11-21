@@ -528,7 +528,7 @@
       "properties": {
         "environment": {
           "type": "string",
-          "description": "The environment the Arcade Engine is running in."
+          "description": "The environment the Arcade Engine is running in; overrides the environment variables."
         },
         "logging": {
           "type": "object",
@@ -548,7 +548,7 @@
           "additionalProperties": false
         }
       },
-      "required": ["environment", "logging"],
+      "required": ["logging"],
       "additionalProperties": true
     },
     "tools": {

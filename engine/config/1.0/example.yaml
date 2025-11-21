@@ -152,7 +152,6 @@ storage:
 
 
 telemetry:
-  environment: ${env:TELEMETRY_ENVIRONMENT}
   logging:
     # debug, info, warn, error
     level: ${env:TELEMETRY_LOGGING_LEVEL}
