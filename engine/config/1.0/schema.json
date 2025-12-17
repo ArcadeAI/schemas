@@ -446,30 +446,27 @@
           "type": "object",
           "description": "Configures the persistent storage system.",
           "properties": {
-            "in_memory": {
+            "embedded": {
               "type": "object",
-              "description": "Use an in-memory database (data is not persisted between restarts). If storage is not configured, this is the default.",
-              "additionalProperties": false
-            }
-          },
-          "required": ["in_memory"],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "description": "Configures the persistent storage system.",
-          "properties": {
-            "sqlite": {
-              "type": "object",
-              "description": "Use a SQLite database for persistent storage.",
+              "description": "Use an embedded PostgreSQL database for local development. Data is persisted to the specified data path.",
               "properties": {
-                "connection_string": { "type": "string" }
+                "data_path": {
+                  "type": "string",
+                  "description": "The path where PostgreSQL data will be stored. Defaults to ~/.arcade/postgres-data if not specified."
+                },
+                "port": {
+                  "description": "The port for the embedded PostgreSQL server. Defaults to 5432.",
+                  "oneOf": [
+                    { "type": "integer", "default": 5432 },
+                    { "$ref": "#/$defs/envVarPattern" },
+                    { "$ref": "#/$defs/filePattern" }
+                  ]
+                }
               },
-              "required": ["connection_string"],
               "additionalProperties": false
             }
           },
-          "required": ["sqlite"],
+          "required": ["embedded"],
           "additionalProperties": false
         },
         {
@@ -478,7 +475,7 @@
           "properties": {
             "postgres": {
               "type": "object",
-              "description": "Use a PostgreSQL database for persistent storage.",
+              "description": "Use an external PostgreSQL database for persistent storage.",
               "properties": {
                 "user": { "type": "string" },
                 "password": { "type": "string" },
@@ -518,7 +515,7 @@
         },
         {
           "type": "null",
-          "description": "No storage configuration is set. Uses an in-memory database (data is not persisted between restarts)."
+          "description": "No storage configuration is set. Uses embedded PostgreSQL with default settings."
         }
       ]
     },
