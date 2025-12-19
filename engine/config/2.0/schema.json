@@ -446,49 +446,40 @@
           "type": "object",
           "description": "Configures the persistent storage system.",
           "properties": {
-            "embedded": {
+            "postgres": {
               "type": "object",
-              "description": "Use an embedded PostgreSQL database for local development. Data is persisted to the specified data path.",
+              "description": "PostgreSQL configuration. Use 'data_path' for embedded mode (local development) or 'host' for external mode (production).",
               "properties": {
                 "data_path": {
                   "type": "string",
-                  "description": "The path where PostgreSQL data will be stored. Defaults to ~/.arcade/postgres-data if not specified."
+                  "description": "Enables embedded PostgreSQL mode. Data is stored at this path. Defaults to ~/.arcade/postgres-data if not specified. Mutually exclusive with 'host'."
+                },
+                "host": {
+                  "type": "string",
+                  "description": "The hostname of the external PostgreSQL server. When set, connects to an external database instead of using embedded mode."
                 },
                 "port": {
-                  "description": "The port for the embedded PostgreSQL server. Defaults to 5432.",
+                  "description": "The port for the PostgreSQL server. Defaults to 5432.",
                   "oneOf": [
                     { "type": "integer", "default": 5432 },
                     { "$ref": "#/$defs/envVarPattern" },
                     { "$ref": "#/$defs/filePattern" }
                   ]
-                }
-              },
-              "additionalProperties": false
-            }
-          },
-          "required": ["embedded"],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "description": "Configures the persistent storage system.",
-          "properties": {
-            "postgres": {
-              "type": "object",
-              "description": "Use an external PostgreSQL database for persistent storage.",
-              "properties": {
-                "user": { "type": "string" },
-                "password": { "type": "string" },
-                "host": { "type": "string" },
-                "port": {
-                  "oneOf": [
-                    { "type": "integer" },
-                    { "$ref": "#/$defs/envVarPattern" },
-                    { "$ref": "#/$defs/filePattern" }
-                  ]
                 },
-                "db": { "type": "string" },
+                "user": {
+                  "type": "string",
+                  "description": "The username for the PostgreSQL connection. Required for external mode."
+                },
+                "password": {
+                  "type": "string",
+                  "description": "The password for the PostgreSQL connection. Required for external mode."
+                },
+                "db": {
+                  "type": "string",
+                  "description": "The database name. Required for external mode."
+                },
                 "sslmode": {
+                  "description": "The SSL mode for the PostgreSQL connection. Required for external mode.",
                   "oneOf": [
                     {
                       "type": "string",
@@ -506,7 +497,6 @@
                   ]
                 }
               },
-              "required": ["user", "password", "host", "port", "db", "sslmode"],
               "additionalProperties": false
             }
           },
