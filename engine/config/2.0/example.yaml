@@ -143,13 +143,14 @@ security:
 
 storage:
   postgres:
-    user: ${env:POSTGRES_USER}
-    password: ${env:POSTGRES_PASSWORD}
-    host: ${env:POSTGRES_HOST}
-    port: ${env:POSTGRES_PORT}
-    db: ${env:POSTGRES_DB}
-    sslmode: require
     data_path: ${env:POSTGRES_DATA_PATH}
+    # Or, connect to an external Postgres instance:
+    # user: ${env:POSTGRES_USER}
+    # password: ${env:POSTGRES_PASSWORD}
+    # host: ${env:POSTGRES_HOST}
+    # port: ${env:POSTGRES_PORT}
+    # db: ${env:POSTGRES_DB}
+    # sslmode: require
 
 
 telemetry:

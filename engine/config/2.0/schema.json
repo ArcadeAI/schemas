@@ -449,63 +449,72 @@
             "postgres": {
               "type": "object",
               "description": "PostgreSQL configuration. Use 'data_path' for embedded mode (local development) or 'host' for external mode (production).",
-              "properties": {
-                "data_path": {
-                  "type": "string",
-                  "description": "Enables embedded PostgreSQL mode. Data is stored at this path. Defaults to ~/.arcade/postgres-data if not specified. Mutually exclusive with 'host'."
-                },
-                "host": {
-                  "type": "string",
-                  "description": "The hostname of the external PostgreSQL server. When set, connects to an external database instead of using embedded mode."
-                },
-                "port": {
-                  "description": "The port for the PostgreSQL server. Defaults to 5432.",
-                  "oneOf": [
-                    { "type": "integer", "default": 5432 },
-                    { "$ref": "#/$defs/envVarPattern" },
-                    { "$ref": "#/$defs/filePattern" }
-                  ]
-                },
-                "user": {
-                  "type": "string",
-                  "description": "The username for the PostgreSQL connection. Required for external mode."
-                },
-                "password": {
-                  "type": "string",
-                  "description": "The password for the PostgreSQL connection. Required for external mode."
-                },
-                "db": {
-                  "type": "string",
-                  "description": "The database name. Required for external mode."
-                },
-                "sslmode": {
-                  "description": "The SSL mode for the PostgreSQL connection. Required for external mode.",
-                  "oneOf": [
-                    {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "data_path": {
                       "type": "string",
-                      "enum": [
-                        "disable",
-                        "allow",
-                        "prefer",
-                        "require",
-                        "verify-ca",
-                        "verify-full"
+                      "description": "Enables embedded PostgreSQL mode. Data is stored at this path. Defaults to ~/.arcade/postgres-data if empty or not specified. Mutually exclusive with 'host'."
+                    }
+                  },
+                  "required": ["data_path"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "host": {
+                      "type": "string",
+                      "description": "The hostname of the external PostgreSQL server. When set, connects to an external database instead of using embedded mode."
+                    },
+                    "port": {
+                      "description": "The port for the PostgreSQL server. Defaults to 5432.",
+                      "oneOf": [
+                        { "type": "integer", "default": 5432 },
+                        { "$ref": "#/$defs/envVarPattern" },
+                        { "$ref": "#/$defs/filePattern" }
                       ]
                     },
-                    { "$ref": "#/$defs/envVarPattern" },
-                    { "$ref": "#/$defs/filePattern" }
-                  ]
+                    "user": {
+                      "type": "string",
+                      "description": "The username for the PostgreSQL connection. Required for external mode."
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The password for the PostgreSQL connection. Required for external mode."
+                    },
+                    "db": {
+                      "type": "string",
+                      "description": "The database name. Required for external mode."
+                    },
+                    "sslmode": {
+                      "description": "The SSL mode for the PostgreSQL connection. Required for external mode.",
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "disable",
+                            "allow",
+                            "prefer",
+                            "require",
+                            "verify-ca",
+                            "verify-full"
+                          ]
+                        },
+                        { "$ref": "#/$defs/envVarPattern" },
+                        { "$ref": "#/$defs/filePattern" }
+                      ]
+                    }
+                  },
+                  "required": ["host", "port", "user", "password", "db", "sslmode"],
+                  "additionalProperties": false
                 }
-              },
-              "additionalProperties": false
+              ]
             }
           },
           "required": ["postgres"],
           "additionalProperties": false
-        },
-        {
-          "type": "null",
-          "description": "No storage configuration is set. Uses embedded PostgreSQL with default settings."
         }
       ]
     },
