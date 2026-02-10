@@ -4,8 +4,8 @@ info:
   description: |
     Webhook contract between Arcade Engine and external hook servers for tool execution control.
 
-    **Note:** All endpoint paths are fully configurable. The paths shown (/pre, /post, etc.) are defaults—you specify the actual paths when configuring your webhook server in Arcade Engine.
-  version: 0.0.1
+    **Note:** All endpoint paths are fully configurable. The paths shown (/pre, /post, etc.) are just defaults. You specify the actual paths when configuring your hooks in Arcade. The payloads described below remain the same.
+  version: 1.0.0-beta
 
 paths:
   /pre:
@@ -356,7 +356,7 @@ components:
           description: The execution output
         execution_code:
           type: string
-          description: Status code from the worker
+          description: Status code from the server
         execution_error:
           type: string
           description: Execution error from the tool call
