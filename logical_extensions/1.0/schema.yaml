@@ -366,7 +366,7 @@ components:
           description: The execution output
         execution_code:
           type: string
-          description: Status code from the worker
+          description: Status code from the server
         execution_error:
           type: string
           description: Execution error from the tool call
