@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Logical Extensions Webhook API
+  title: Logical Extensions Webhook API (Beta)
   description: |
     Webhook contract between Arcade Engine and external hook servers for tool execution control.
 
     **Note:** All endpoint paths are fully configurable. The paths shown (/pre, /post, etc.) are defaults—you specify the actual paths when configuring your webhook server in Arcade Engine.
-  version: 1.0.0
+  version: 0.0.1
 
 paths:
   /pre:
@@ -39,10 +39,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized - invalid or missing bearer token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+
         '500':
           description: Internal server error
           content:
@@ -292,13 +289,6 @@ components:
           description: Tool inputs (name -> value)
         context:
           $ref: '#/components/schemas/ToolContext'
-        servers:
-          $ref: '#/components/schemas/Servers'
-        headers:
-          type: object
-          additionalProperties:
-            type: string
-          description: Headers from the incoming tool request
 
     PreHookOverride:
       type: object
@@ -334,7 +324,7 @@ components:
           $ref: '#/components/schemas/ResponseCode'
         error_message:
           type: string
-          description: Error message for the LLM
+          description: Error message for the Agent
         override:
           $ref: '#/components/schemas/PreHookOverride'
 
@@ -395,13 +385,13 @@ components:
           $ref: '#/components/schemas/ResponseCode'
         error_message:
           type: string
-          description: Error message for the LLM
+          description: Error message for the Agent
         override:
           $ref: '#/components/schemas/PostHookOverride'
 
-    ToolkitAuthRequirements:
+    ToolAuthRequirements:
       type: object
-      description: Authorization requirements for a toolkit
+      description: Authorization requirements for a tool
       properties:
         provider_id:
           type: string
@@ -435,8 +425,8 @@ components:
         authorization:
           type: array
           items:
-            $ref: '#/components/schemas/ToolkitAuthRequirements'
-          description: Authorization requirements for a toolkit
+            $ref: '#/components/schemas/ToolAuthRequirements'
+          description: Authorization requirements for a tool
         secrets:
           type: array
           items:
@@ -458,7 +448,7 @@ components:
 
     ToolkitInfo:
       type: object
-      description: Toolkit information with tools
+      description: Information about a group of tools
       properties:
         tools:
           type: object
@@ -470,7 +460,7 @@ components:
 
     Toolkits:
       type: object
-      description: Map of toolkit name to toolkit info
+      description: Map of a group of tools
       additionalProperties:
         $ref: '#/components/schemas/ToolkitInfo'
 
@@ -489,14 +479,14 @@ components:
 
     AccessHookResult:
       type: object
-      description: Access-hook response from hook server to engine. If 'allow' is included, ONLY those are allowed (deny list ignored).
+      description: Access-hook response from hook server to engine. If 'only' is included, ONLY those are allowed (deny list ignored).
       properties:
-        allow:
+        only:
           $ref: '#/components/schemas/Toolkits'
           description: If included, ONLY these are allowed (deny list ignored)
         deny:
           $ref: '#/components/schemas/Toolkits'
-          description: Tools to deny (ignored if 'allow' is used)
+          description: Tools to deny (ignored if 'only' is used)
 
     ResponseCode:
       type: string
