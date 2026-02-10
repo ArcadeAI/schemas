@@ -234,40 +234,6 @@ components:
           type: string
           description: User ID for access checks
 
-    ServerInfo:
-      type: object
-      description: Server routing information
-      required:
-        - name
-        - uri
-        - type
-      properties:
-        name:
-          type: string
-          description: Server name
-        uri:
-          type: string
-          description: Server URI
-        type:
-          type: string
-          enum:
-            - arcade
-            - mcp
-          description: Server type
-
-    Servers:
-      type: object
-      description: Server routing information for pre-hook
-      properties:
-        destination:
-          $ref: '#/components/schemas/ServerInfo'
-          description: Target server
-        available:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServerInfo'
-          description: Available servers with same structure
-
     PreHookRequest:
       type: object
       description: Pre-hook request from engine to hook server
@@ -276,7 +242,6 @@ components:
         - tool
         - inputs
         - context
-        - servers
       properties:
         execution_id:
           type: string
@@ -305,14 +270,6 @@ components:
             additionalProperties:
               type: string
           description: Override secrets
-        server:
-          $ref: '#/components/schemas/ServerInfo'
-          description: Override target server
-        headers:
-          type: object
-          additionalProperties:
-            type: string
-          description: Override request headers
 
     PreHookResult:
       type: object
@@ -335,8 +292,6 @@ components:
         - execution_id
         - tool
         - context
-        - server
-        - output
       properties:
         execution_id:
           type: string
@@ -351,9 +306,7 @@ components:
           type: boolean
           description: Whether the tool succeeded
         output:
-          type: object
-          additionalProperties: true
-          description: The execution output
+          description: The tool's output value (any JSON type — string, number, object, array, etc.)
         execution_code:
           type: string
           description: Status code from the server
@@ -362,18 +315,13 @@ components:
           description: Execution error from the tool call
         context:
           $ref: '#/components/schemas/ToolContext'
-        server:
-          $ref: '#/components/schemas/ServerInfo'
-          description: Server that executed the tool
 
     PostHookOverride:
       type: object
       description: Override response parameters
       properties:
         output:
-          type: object
-          additionalProperties: true
-          description: Override the response returned
+          description: Override the output value (any JSON type — string, number, object, array, etc.)
 
     PostHookResult:
       type: object
@@ -432,9 +380,6 @@ components:
           items:
             $ref: '#/components/schemas/SecretRequirement'
           description: Required secrets
-        server:
-          $ref: '#/components/schemas/ServerInfo'
-          description: Server information
 
     ToolVersionInfo:
       type: object
@@ -516,5 +461,5 @@ components:
           type: string
           description: Human-readable error message
         code:
-          type: string
+          $ref: '#/components/schemas/ResponseCode'
           description: Machine-readable error code for programmatic handling
