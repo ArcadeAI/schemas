@@ -420,7 +420,7 @@ components:
 
     ToolkitRequirements:
       type: object
-      description: Requirements for a tool
+      description: Requirements for a toolkit (group of tools)
       properties:
         authorization:
           type: array
