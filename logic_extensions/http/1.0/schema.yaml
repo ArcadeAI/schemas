@@ -5,7 +5,7 @@ info:
     Webhook contract between Arcade Engine and external hook servers for tool execution control.
 
     **Note:** All endpoint paths are fully configurable. The paths shown (/pre, /post, etc.) are just defaults. You specify the actual paths when configuring your hooks in Arcade. The payloads described below remain the same.
-  version: 1.1.0-beta
+  version: 1.1.1-beta
 
 paths:
   /pre:
@@ -186,7 +186,6 @@ components:
           description: Tool version
         metadata:
           $ref: '#/components/schemas/ToolVersionInfoMetadata'
-          description: Tool metadata
 
     OAuth2Details:
       type: object
@@ -395,7 +394,6 @@ components:
           description: Tool version
         metadata:
           $ref: '#/components/schemas/ToolVersionInfoMetadata'
-          description: Tool metadata
 
     ToolVersionInfoMetadata:
       type: object
