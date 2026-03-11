@@ -5,7 +5,7 @@ info:
     Webhook contract between Arcade Engine and external hook servers for tool execution control.
 
     **Note:** All endpoint paths are fully configurable. The paths shown (/pre, /post, etc.) are just defaults. You specify the actual paths when configuring your hooks in Arcade. The payloads described below remain the same.
-  version: 1.0.0-beta
+  version: 1.1.0-beta
 
 paths:
   /pre:
@@ -184,6 +184,9 @@ components:
         version:
           type: string
           description: Tool version
+        metadata:
+          $ref: '#/components/schemas/ToolVersionInfoMetadata'
+          description: Tool metadata
 
     OAuth2Details:
       type: object
@@ -390,6 +393,60 @@ components:
         version:
           type: string
           description: Tool version
+        metadata:
+          $ref: '#/components/schemas/ToolVersionInfoMetadata'
+          description: Tool metadata
+
+    ToolVersionInfoMetadata:
+      type: object
+      description: Tool metadata
+      properties:
+        classification:
+          $ref: '#/components/schemas/ToolClassification'
+        behavior:
+          $ref: '#/components/schemas/ToolBehavior'
+        extras:
+          type: object
+          additionalProperties: true
+          description: 'Arbitrary additional metadata (e.g., {"IdP": "entra_id"})'
+
+    ToolClassification:
+      type: object
+      description: Classification metadata for a tool
+      properties:
+        service_domains:
+          type: array
+          items:
+            type: string
+          description: >
+            Service domains this tool interfaces with (e.g., "crm", "email", "calendar").
+            Sourced from the tool's Classification.ServiceDomains metadata.
+            See https://docs.arcade.dev/en/guides/create-tools/tool-basics/add-tool-metadata for valid values.
+
+    ToolBehavior:
+      type: object
+      description: Behavior metadata for a tool
+      properties:
+        operations:
+          type: array
+          items:
+            type: string
+          description: >
+            Operations this tool performs (e.g., "read", "create", "update", "delete", "opaque").
+            Sourced from the tool's Behavior.Operations metadata.
+            See https://docs.arcade.dev/en/guides/create-tools/tool-basics/add-tool-metadata for valid values.
+        read_only:
+          type: boolean
+          description: Whether the tool only reads data
+        destructive:
+          type: boolean
+          description: Whether the tool can delete or irreversibly modify data
+        idempotent:
+          type: boolean
+          description: Whether repeated calls with the same inputs produce the same result
+        open_world:
+          type: boolean
+          description: Whether the tool can affect state outside its defined outputs
 
     ToolkitInfo:
       type: object
