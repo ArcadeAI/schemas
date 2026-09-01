@@ -553,7 +553,7 @@
                     }
                   },
                   "required": ["data_path"],
-                  "additionalProperties": false
+                  "additionalProperties": true
                 },
                 {
                   "type": "object",
@@ -602,13 +602,13 @@
                     }
                   },
                   "required": ["host", "port", "user", "password", "db", "sslmode"],
-                  "additionalProperties": false
+                  "additionalProperties": true
                 }
               ]
             }
           },
           "required": ["postgres"],
-          "additionalProperties": false
+          "additionalProperties": true
         }
       ]
     },
