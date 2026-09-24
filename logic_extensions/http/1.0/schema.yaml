@@ -333,14 +333,14 @@ components:
         content:
           type: array
           description: |
-            Replace the content blocks. Omit to forward the request's `content` unchanged. A hook that rewrites `output` should rewrite `content` too, or the server's own text reaches the client as it was sent.
+            Replace the content blocks. Omit to forward the request's `content` unchanged. An empty list removes every upstream block, and MCP clients then receive `output` rendered as a single text block. A hook that rewrites `output` should rewrite `content` too, or the server's own text reaches the client as it was sent.
           items:
             $ref: '#/components/schemas/ContentBlock'
 
     ContentBlock:
       type: object
       description: |
-        An MCP content block in its wire shape. `type` selects the block's other fields, which follow the MCP specification: https://modelcontextprotocol.io/specification/2025-11-25/server/tools#tool-result
+        An MCP content block in its wire shape. `type` selects the block's other fields, which follow the MCP specification: https://modelcontextprotocol.io/specification/2026-07-28/server/tools#tool-result
       required:
         - type
       properties:
