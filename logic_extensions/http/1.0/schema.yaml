@@ -312,7 +312,7 @@ components:
         content:
           type: array
           description: |
-            The content blocks a remote MCP server returned alongside its structured result, in MCP wire shape (text, image, audio, resource_link, resource), annotations and `_meta` included. MCP clients receive the text blocks as the unstructured side of the result. Absent when the server sent no content of its own, in which case clients receive `output` rendered as text.
+            The content blocks a remote MCP server returned alongside its structured result, in MCP wire shape (text, image, audio, resource_link, resource). Fields the MCP specification defines are forwarded, annotations and `_meta` included, except that a `resource_link` block may arrive without its `title`, `size`, `icons`, or `_meta`. Fields outside the specification may be dropped. MCP clients receive the text blocks as the unstructured side of the result. Absent when the server sent no content of its own, in which case clients receive `output` rendered as text. Also absent on error results, whose error text arrives in `execution_error`.
           items:
             $ref: '#/components/schemas/ContentBlock'
         execution_code:
