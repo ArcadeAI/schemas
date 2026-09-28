@@ -5,7 +5,7 @@ info:
     Webhook contract between Arcade Engine and external hook servers for tool execution control.
 
     **Note:** All endpoint paths are fully configurable. The paths shown (/pre, /post, etc.) are just defaults. You specify the actual paths when configuring your hooks in Arcade. The payloads described below remain the same.
-  version: 1.1.1-beta
+  version: 1.2.0-beta
 
 paths:
   /pre:
@@ -309,6 +309,12 @@ components:
           description: Whether the tool succeeded
         output:
           description: The tool's output value (any JSON type — string, number, object, array, etc.)
+        content:
+          type: array
+          description: |
+            The content blocks the tool's server returned alongside its structured result, in Arcade's protocol-neutral content-block format (see `ContentBlock`). Today the only source is remote MCP servers. Fields the block definitions include are forwarded, annotations and `_meta` included, except that a `resource_link` block may arrive without its `title`, `size`, `icons`, or `_meta`. Fields outside the block definitions may be dropped. Clients receive the text blocks as the unstructured side of the result. Absent when the server sent no content of its own, in which case clients receive `output` rendered as text. Also absent on error results, whose error text arrives in `execution_error`.
+          items:
+            $ref: '#/components/schemas/ContentBlock'
         execution_code:
           type: string
           description: Status code from the server
@@ -324,6 +330,24 @@ components:
       properties:
         output:
           description: Override the output value (any JSON type — string, number, object, array, etc.)
+        content:
+          type: array
+          description: |
+            Replace the content blocks, in the same format as the request's `content`. Omit to forward the request's `content` unchanged. An empty list removes every block, and clients then receive `output` rendered as a single text block. A hook that rewrites `output` should rewrite `content` too, or the server's own text reaches the client as it was sent.
+          items:
+            $ref: '#/components/schemas/ContentBlock'
+
+    ContentBlock:
+      type: object
+      description: |
+        A block in Arcade's protocol-neutral content-block format: `text`, `image`, `audio`, `resource_link`, or `resource`, with `annotations` and `_meta`. The format follows the MCP content-block model, so MCP tooling and documentation apply, and `type` selects the block's other fields as MCP defines them: https://modelcontextprotocol.io/specification/2026-07-28/server/tools#tool-result. Content a server returns in another protocol would be converted into this format.
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          description: The block type, e.g. "text", "image", "audio", "resource_link", or "resource"
+      additionalProperties: true
 
     PostHookResult:
       type: object
