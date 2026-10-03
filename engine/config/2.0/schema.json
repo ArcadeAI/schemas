@@ -320,6 +320,39 @@
       "oneOf": [{ "required": ["in_memory"] }, { "required": ["redis"] }],
       "additionalProperties": false
     },
+    "capability_gap": {
+      "type": "object",
+      "description": "Configures the capability gap self-report built-in tool.",
+      "properties": {
+        "enabled": {
+          "description": "Whether the capability gap tool is injected into every gateway's tools/list.",
+          "oneOf": [
+            { "type": "boolean", "default": false },
+            { "$ref": "#/$defs/envVarPattern" },
+            { "$ref": "#/$defs/filePattern" }
+          ]
+        },
+        "instruction": {
+          "type": "string",
+          "description": "Instruction prepended to every gateway's MCP instructions while enabled."
+        },
+        "client_names": {
+          "type": "array",
+          "description": "Optional allowed values for the tool's client_name enum. When omitted, built-in defaults are used. \"other\" is always appended automatically if not already present.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "model_names": {
+          "type": "array",
+          "description": "Optional allowed values for the tool's model_name enum. When omitted, built-in defaults are used. \"other\" is always appended automatically if not already present.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
     "execution_logging": {
       "type": "object",
       "description": "Configures execution logging for tool calls.",
