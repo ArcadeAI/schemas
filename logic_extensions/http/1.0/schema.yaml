@@ -309,6 +309,11 @@ components:
           description: Whether the tool succeeded
         output:
           description: The tool's output value (any JSON type — string, number, object, array, etc.)
+        metadata:
+          type: object
+          additionalProperties: true
+          x-go-type: json.RawMessage
+          description: Remote tool result metadata. Reserved Arcade fields are excluded.
         content:
           type: array
           description: |
@@ -330,6 +335,11 @@ components:
       properties:
         output:
           description: Override the output value (any JSON type — string, number, object, array, etc.)
+        metadata:
+          type: object
+          additionalProperties: true
+          x-go-type: json.RawMessage
+          description: Replace remote result metadata. An empty object removes all remote metadata; omission preserves it.
         content:
           type: array
           description: |
