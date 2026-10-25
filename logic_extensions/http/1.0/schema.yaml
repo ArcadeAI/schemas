@@ -308,7 +308,13 @@ components:
           type: boolean
           description: Whether the tool succeeded
         output:
-          description: The tool's output value (any JSON type — string, number, object, array, etc.)
+          description: |
+            The tool's output value, which may be any JSON type. For a remote JSON-RPC error, this is an object with `message` and optional `data`; the protocol error code is preserved separately. For a remote `input_required` result, this is an object with `inputRequests` and optional `structuredContent` containing the partial output.
+        metadata:
+          type: object
+          additionalProperties: true
+          x-go-type: json.RawMessage
+          description: Remote tool result metadata. Reserved Arcade fields are excluded.
         content:
           type: array
           description: |
@@ -329,7 +335,13 @@ components:
       description: Override response parameters
       properties:
         output:
-          description: Override the output value (any JSON type — string, number, object, array, etc.)
+          description: |
+            Replace the output value using the same shape as the request's `output`. For remote JSON-RPC errors, replace `message` and optional `data`. For `input_required`, preserve the exact `inputRequests` key set; request values and partial `structuredContent` may be redacted. An invalid transformation fails the tool call.
+        metadata:
+          type: object
+          additionalProperties: true
+          x-go-type: json.RawMessage
+          description: Replace remote result metadata. An empty object removes all remote metadata; omission preserves it.
         content:
           type: array
           description: |
