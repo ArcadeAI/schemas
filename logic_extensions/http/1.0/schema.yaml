@@ -235,6 +235,12 @@ components:
         user_id:
           type: string
           description: User ID for access checks
+        gateway_id:
+          type: string
+          description: ID of the MCP gateway the call came through. Omitted when the call did not come through a gateway.
+        api_key_id:
+          type: string
+          description: ID of the project API key that authenticated the caller. Omitted when the caller authenticated some other way.
 
     PreHookRequest:
       type: object
@@ -510,6 +516,12 @@ components:
         user_id:
           type: string
           description: User ID
+        gateway_id:
+          type: string
+          description: ID of the MCP gateway the request came through. Omitted when the request did not come through a gateway.
+        api_key_id:
+          type: string
+          description: ID of the project API key that authenticated the caller. Omitted when the caller authenticated some other way.
         toolkits:
           $ref: '#/components/schemas/Toolkits'
 
