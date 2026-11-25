@@ -246,11 +246,15 @@ components:
 
     AgentInfo:
       type: object
-      description: The headless agent that made the call, as its identity provider names it. Present only when an agent, not a person, made the call; user_id is then empty.
+      description: The headless agent that made the call. Present only when an agent, not a person, made the call; user_id is then empty.
       required:
+        - id
         - issuer
         - claim_value
       properties:
+        id:
+          type: string
+          description: Arcade's ID for the agent, such as "agt_2x9Kc4…". Tool execution records and Arcade's agents API name the agent by this ID.
         issuer:
           type: string
           description: Issuer of the identity provider that vouches for the agent, exactly as in the agent's token.
