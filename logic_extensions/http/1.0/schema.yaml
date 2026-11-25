@@ -250,7 +250,7 @@ components:
       required:
         - id
         - issuer
-        - claim_value
+        - identifier_value
       properties:
         id:
           type: string
@@ -258,9 +258,9 @@ components:
         issuer:
           type: string
           description: Issuer of the identity provider that vouches for the agent, exactly as in the agent's token.
-        claim_value:
+        identifier_value:
           type: string
-          description: Value of the claim the agent's agent source reads the agent from, such as "invoice-bot".
+          description: Value of the agent identifier claimed by the identity provider, such as "invoice-bot".
 
     PreHookRequest:
       type: object
