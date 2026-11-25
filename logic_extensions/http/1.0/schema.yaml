@@ -241,6 +241,26 @@ components:
         api_key_id:
           type: string
           description: ID of the project API key that authenticated the caller. Omitted when the caller authenticated some other way.
+        agent:
+          $ref: '#/components/schemas/AgentInfo'
+
+    AgentInfo:
+      type: object
+      description: The headless agent that made the call. Present only when an agent, not a person, made the call; user_id is then empty.
+      required:
+        - id
+        - issuer
+        - identifier_value
+      properties:
+        id:
+          type: string
+          description: Arcade's ID for the agent, such as "agt_2x9Kc4…". Tool execution records and Arcade's agents API name the agent by this ID.
+        issuer:
+          type: string
+          description: Issuer of the identity provider that vouches for the agent, exactly as in the agent's token.
+        identifier_value:
+          type: string
+          description: Value of the agent identifier claimed by the identity provider, such as "invoice-bot".
 
     PreHookRequest:
       type: object
@@ -515,13 +535,15 @@ components:
       properties:
         user_id:
           type: string
-          description: User ID
+          description: User ID. Empty when a headless agent, named in agent, is asking.
         gateway_id:
           type: string
           description: ID of the MCP gateway the request came through. Omitted when the request did not come through a gateway.
         api_key_id:
           type: string
           description: ID of the project API key that authenticated the caller. Omitted when the caller authenticated some other way.
+        agent:
+          $ref: '#/components/schemas/AgentInfo'
         toolkits:
           $ref: '#/components/schemas/Toolkits'
 
